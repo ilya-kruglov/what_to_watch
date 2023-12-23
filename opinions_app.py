@@ -1,5 +1,5 @@
 from datetime import datetime
-# from pprint import pprint as pp
+from random import randrange
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -32,8 +32,17 @@ class Opinion(db.Model):
 
 @app.route('/')
 def index_view():
-    # pp(app.config)
-    return 'Совсем скоро тут будет случайное мнение о фильме!'
+    # Определяется количество мнений в базе данных
+    quantity = Opinion.query.count()
+    # Если мнений нет,
+    if not quantity:
+        # то возвращается сообщение
+        return 'В базе данных мнений о фильмах нет.'
+    # Иначе выбирается случайное число в диапазоне от 0 и до quantity
+    offset_value = randrange(quantity)
+    # И определяется случайный объект
+    opinion = Opinion.query.offset(offset_value).first()
+    return opinion.text
 
 
 if __name__ == '__main__':
