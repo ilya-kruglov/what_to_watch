@@ -11,9 +11,10 @@ from .views import random_opinion
 # Явно разрешить метод GET
 @app.route('/api/opinions/<int:id>/', methods=['GET'])
 def get_opinion(id):
-    # Получить объект по id или выбросить ошибку
-    opinion = Opinion.query.get_or_404(id)
-    # Конвертировать данные в JSON и вернуть объект и код ответа API
+    opinion = Opinion.query.get(id)
+    if opinion is None:
+        # Тут код ответа нужно указать явным образом
+        raise InvalidAPIUsage('Мнение с указанным id не найдено', 404)
     return jsonify({'opinion': opinion.to_dict()}), 200
 
 
@@ -27,9 +28,11 @@ def update_opinion(id):
     ):
         raise InvalidAPIUsage('Такое мнение уже есть в базе данных')
 
-    opinion = Opinion.query.get_or_404(id)
-    # Если метод get_or_404 не найдёт указанный ключ,
-    # то он выбросит исключение 404
+    opinion = Opinion.query.get(id)
+    # Тут код ответа нужно указать явным образом
+    if opinion is None:
+        raise InvalidAPIUsage('Мнение с указанным id не найдено', 404)
+
     opinion.title = data.get('title', opinion.title)
     opinion.text = data.get('text', opinion.text)
     opinion.source = data.get('source', opinion.source)
@@ -42,7 +45,11 @@ def update_opinion(id):
 
 @app.route('/api/opinions/<int:id>/', methods=['DELETE'])
 def delete_opinion(id):
-    opinion = Opinion.query.get_or_404(id)
+    opinion = Opinion.query.get(id)
+    if opinion is None:
+        # Тут код ответа нужно указать явным образом
+        raise InvalidAPIUsage('Мнение с указанным id не найдено', 404)
+
     db.session.delete(opinion)
     db.session.commit()
     # При удалении принято возвращать только код ответа 204
@@ -89,4 +96,7 @@ def add_opinion():
 @app.route('/api/get-random-opinion/', methods=['GET'])
 def get_random_opinion():
     opinion = random_opinion()
-    return jsonify({'opinion': opinion.to_dict()}), 200
+    if opinion is not None:
+        return jsonify({'opinion': opinion.to_dict()}), 200
+    # Тут код ответа нужно указать явным образом
+    raise InvalidAPIUsage('В базе данных нет мнений', 404)
