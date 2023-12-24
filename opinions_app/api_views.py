@@ -1,3 +1,5 @@
+from random import randrange
+
 from flask import jsonify, request
 
 from . import app, db
@@ -61,3 +63,12 @@ def add_opinion():
     # Сохранение изменений
     db.session.commit()
     return jsonify({'opinion': opinion.to_dict()}), 201
+
+
+@app.route('/api/get-random-opinion/', methods=['GET'])
+def get_random_opinion():
+    quantity = Opinion.query.count()
+    if quantity:
+        offset_value = randrange(quantity)
+        opinion = Opinion.query.offset(offset_value).first()
+        return jsonify({'opinion': opinion.to_dict()}), 200
