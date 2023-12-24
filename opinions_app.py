@@ -3,6 +3,7 @@ from random import randrange
 from secrets import token_hex
 
 from flask import Flask, redirect, render_template, url_for, flash, abort
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, URLField
@@ -20,6 +21,8 @@ app.config['SECRET_KEY'] = secret_key
 
 # В ORM передаётся в качестве параметра экземпляр приложения Flask
 db = SQLAlchemy(app)
+# Добавляем в приложение работу с миграциями (Alembic): flask db init
+migrate = Migrate(app, db)
 
 
 class Opinion(db.Model):
