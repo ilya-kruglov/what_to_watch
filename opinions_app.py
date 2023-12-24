@@ -1,10 +1,10 @@
 import csv
-import click
 from datetime import datetime
 from random import randrange
 from secrets import token_hex
 
-from flask import Flask, redirect, render_template, url_for, flash, abort
+import click
+from flask import Flask, abort, flash, redirect, render_template, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
