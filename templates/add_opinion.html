@@ -19,12 +19,19 @@
             {% endif %}
           </p>
           {{ form.source(class="form-control form-control-lg py-3 mb-3", placeholder=form.source.label.text) }}
+<!--          <p class="text-danger">-->
+<!--            {% if form.source.errors %}-->
+<!--              {% for error in form.source.errors %}-->
+<!--                <span style="color: red">{{ error }}</span>-->
+<!--              {% endfor %}-->
+<!--            {% endif %}-->
+<!--          </p>-->
           <p></p>
           {{ form.text(class="form-control form-control-lg py-3 mb-3", placeholder=form.text.label.text, rows="3", cols="40")}}
           <p class="text-danger">
             {% if form.text.errors %}
               {% for error in form.text.errors %}
-                {{ error }}
+                <span style="color: red">{{ error }}</span>
               {% endfor %}
             {% endif %}
           </p>
