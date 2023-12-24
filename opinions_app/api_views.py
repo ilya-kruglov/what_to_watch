@@ -27,3 +27,12 @@ def update_opinion(id):
     db.session.commit()
     # При создании или изменении объекта вернём сам объект и код 201
     return jsonify({'opinion': opinion.to_dict()}), 201
+
+
+@app.route('/api/opinions/<int:id>/', methods=['DELETE'])
+def delete_opinion(id):
+    opinion = Opinion.query.get_or_404(id)
+    db.session.delete(opinion)
+    db.session.commit()
+    # При удалении принято возвращать только код ответа 204
+    return '', 204
