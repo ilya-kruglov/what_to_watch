@@ -28,7 +28,7 @@
               {% endfor %}
             {% endif %}
           </p>
-          {% with messages = get_flashed_messages(category_filter=["error"]) %}
+          {% with messages = get_flashed_messages(category_filter=["text_duplicate_error"]) %}
             {% if messages %}
               {% for message in messages %}
                 <div class="text-danger">
