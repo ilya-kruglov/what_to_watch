@@ -2,7 +2,7 @@ from datetime import datetime
 from random import randrange
 from secrets import token_hex
 
-from flask import Flask, redirect, render_template, url_for, flash
+from flask import Flask, redirect, render_template, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, URLField
@@ -62,8 +62,8 @@ def index_view():
     quantity = Opinion.query.count()
     # Если мнений нет,
     if not quantity:
-        # то возвращается сообщение
-        return 'В базе данных мнений о фильмах нет.'
+        # то возвращается желаемое исключение, например "Страница не найдена"
+        abort(404)
     # Иначе выбирается случайное число в диапазоне от 0 и до quantity
     offset_value = randrange(quantity)
     # И определяется случайный объект
