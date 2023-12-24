@@ -81,7 +81,10 @@ def add_opinion_view():
         # Если в БД уже есть мнение с текстом, который ввёл пользователь,
         if Opinion.query.filter_by(text=text).first() is not None:
             # вызвать функцию flash и передать соответствующее сообщение
-            flash('Такое мнение уже было оставлено ранее!', 'text_duplicate_error')
+            flash(
+                'Такое мнение уже было оставлено ранее!',
+                'text_duplicate_error',
+            )
             # и вернуть пользователя на страницу «Добавить новое мнение»
             return render_template('add_opinion.html', form=form)
         # нужно создать новый экземпляр класса Opinion
