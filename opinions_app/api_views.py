@@ -3,6 +3,7 @@ from random import randrange
 from flask import jsonify, request
 
 from . import app, db
+from .error_handlers import InvalidAPIUsage
 from .models import Opinion
 from .views import random_opinion
 
@@ -24,12 +25,7 @@ def update_opinion(id):
         'text' in data and
         Opinion.query.filter_by(text=data['text']).first() is not None
     ):
-        # При неуникальном значении поля text
-        # возвращаем сообщение об ошибке в формате JSON
-        # и статус-код 400
-        return jsonify(
-            {'error': 'Такое мнение уже есть в базе данных'}
-        ), 400
+        raise InvalidAPIUsage('Такое мнение уже есть в базе данных')
 
     opinion = Opinion.query.get_or_404(id)
     # Если метод get_or_404 не найдёт указанный ключ,
@@ -70,19 +66,14 @@ def add_opinion():
 
     # Если нужных ключей нет в словаре,
     if 'title' not in data or 'text' not in data:
-        # ...то возвращаем сообщение об ошибке в формате JSON и код 400:
-        return jsonify(
-            {'error': 'В запросе отсутствуют обязательные поля'}
-        ), 400
+        # Выбрасываем собственное исключение.
+        # Второй параметр (статус-код) можно не передавать:
+        # нужно вернуть код 400, а именно он возвращается по умолчанию
+        raise InvalidAPIUsage('В запросе отсутствуют обязательные поля')
 
-    # Если в базе данных уже есть объект
-    # с таким же значением поля text
     if Opinion.query.filter_by(text=data['text']).first() is not None:
-        # ...возвращаем сообщение об ошибке в формате JSON
-        # и статус-код 400
-        return jsonify(
-            {'error': 'Такое мнение уже есть в базе данных'}
-        ), 400
+        # Выбрасываем собственное исключение
+        raise InvalidAPIUsage('Такое мнение уже есть в базе данных')
 
     # Создание нового пустого экземпляра модели
     opinion = Opinion()
