@@ -1,8 +1,12 @@
 from datetime import datetime
 from random import randrange
+from secrets import token_hex
 
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, TextAreaField, URLField
+from wtforms.validators import DataRequired, Length, Optional
 
 app = Flask(__name__)
 
@@ -10,6 +14,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 # Задаётся конкретное значение для конфигурационного ключа
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Generate a secure random key
+secret_key = token_hex(32)
+app.config['SECRET_KEY'] = secret_key
 
 # В ORM передаётся в качестве параметра экземпляр приложения Flask
 db = SQLAlchemy(app)
@@ -30,8 +37,27 @@ class Opinion(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 
+class OpinionForm(FlaskForm):
+    title = StringField(
+        'Введите название фильма',
+        validators=[DataRequired(message='Обязательное поле'),
+                    Length(1, 128)]
+    )
+    text = TextAreaField(
+        'Напишите мнение',
+        validators=[DataRequired(message='Обязательное поле')]
+    )
+    source = URLField(
+        'Добавьте ссылку на подробный обзор фильма',
+        validators=[Length(1, 256), Optional()]
+    )
+    submit = SubmitField('Добавить')
+
+
 @app.route('/')
 def index_view():
+    # for key, value in app.config.items():
+    #     print(f'{key}: {value}')
     # Определяется количество мнений в базе данных
     quantity = Opinion.query.count()
     # Если мнений нет,
@@ -47,7 +73,9 @@ def index_view():
 
 @app.route('/add')
 def add_opinion_view():
-    return render_template('add_opinion.html')
+    # Вот тут создаётся новый экземпляр формы
+    form = OpinionForm()
+    return render_template('add_opinion.html', form=form)
 
 
 # Тут указывается конвертер пути для id
