@@ -10,4 +10,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from . import cli_commands, error_handlers, views
+# Importing modules below intentionally to ensure that they have access
+# to the instances of classes created above. Placing them before the
+# instances are created would lead to issues as they rely on these instances.
+from . import api_views, cli_commands, error_handlers, views
