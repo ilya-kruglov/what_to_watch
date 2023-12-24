@@ -19,6 +19,18 @@ def get_opinion(id):
 @app.route('/api/opinions/<int:id>/', methods=['PATCH'])
 def update_opinion(id):
     data = request.get_json()
+
+    if (
+        'text' in data and
+        Opinion.query.filter_by(text=data['text']).first() is not None
+    ):
+        # При неуникальном значении поля text
+        # возвращаем сообщение об ошибке в формате JSON
+        # и статус-код 400
+        return jsonify(
+            {'error': 'Такое мнение уже есть в базе данных'}
+        ), 400
+
     opinion = Opinion.query.get_or_404(id)
     # Если метод get_or_404 не найдёт указанный ключ,
     # то он выбросит исключение 404
