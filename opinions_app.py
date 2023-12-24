@@ -38,6 +38,8 @@ class Opinion(db.Model):
     # Дата и время — текущее время,
     # по этому столбцу база данных будет проиндексирована
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # Добавляем новое поле (пользователь)
+    added_by = db.Column(db.String(64))
 
 
 class OpinionForm(FlaskForm):
